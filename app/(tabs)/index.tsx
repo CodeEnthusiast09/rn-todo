@@ -27,13 +27,17 @@ export default function Index() {
   const { colors } = useTheme();
 
   const [editingId, setEditingId] = useState<Id<"todos"> | null>(null);
+
   const [editText, setEditText] = useState("");
 
   const homeStyles = createHomeStyles(colors);
 
   const todos = useQuery(api.todos.getTodos);
+
   const toggleTodo = useMutation(api.todos.toggleTodo);
+
   const deleteTodo = useMutation(api.todos.deleteTodo);
+
   const updateTodo = useMutation(api.todos.updateTodo);
 
   const isLoading = todos === undefined;
@@ -44,8 +48,14 @@ export default function Index() {
     try {
       await toggleTodo({ id });
     } catch (error) {
-      console.log("Error toggling todo", error);
-      Alert.alert("Error", "Failed to toggle todo");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to toggle todo. Please try again.";
+
+      console.error("Error adding todo:", error);
+
+      Alert.alert("Error", errorMessage, [{ text: "OK" }]);
     }
   };
 
@@ -55,7 +65,19 @@ export default function Index() {
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => deleteTodo({ id }),
+        onPress: async () => {
+          try {
+            await deleteTodo({ id });
+          } catch (error) {
+            const errorMessage =
+              error instanceof Error
+                ? error.message
+                : "Failed to update todo. Please try again.";
+
+            console.error("Error deleting todo:", error);
+            Alert.alert("Error", errorMessage, [{ text: "OK" }]);
+          }
+        },
       },
     ]);
   };
@@ -66,15 +88,27 @@ export default function Index() {
   };
 
   const handleSaveEdit = async () => {
-    if (editingId) {
-      try {
-        await updateTodo({ id: editingId, text: editText.trim() });
-        setEditingId(null);
-        setEditText("");
-      } catch (error) {
-        console.log("Error updating todo", error);
-        Alert.alert("Error", "Failed to update todo");
-      }
+    if (!editingId) return;
+
+    const trimmedText = editText.trim();
+
+    if (trimmedText.length === 0) {
+      Alert.alert("Error", "Todo text cannot be empty", [{ text: "OK" }]);
+      return;
+    }
+
+    try {
+      await updateTodo({ id: editingId, text: trimmedText });
+      setEditingId(null);
+      setEditText("");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update todo. Please try again."; // ✅ Correct message
+
+      console.error("Error updating todo:", error);
+      Alert.alert("Error", errorMessage, [{ text: "OK" }]);
     }
   };
 
