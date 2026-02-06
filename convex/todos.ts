@@ -72,7 +72,7 @@ export const updateTodo = mutation({
   },
 });
 
-export const clearAllTodo = mutation({
+export const clearAllTodos = mutation({
   handler: async (ctx) => {
     const todos = await ctx.db.query("todos").collect();
 

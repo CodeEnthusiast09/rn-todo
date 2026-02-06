@@ -105,7 +105,7 @@ export default function Index() {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Failed to update todo. Please try again."; // ✅ Correct message
+          : "Failed to update todo. Please try again.";
 
       console.error("Error updating todo:", error);
       Alert.alert("Error", errorMessage, [{ text: "OK" }]);
@@ -239,7 +239,10 @@ export default function Index() {
       style={homeStyles.container}
     >
       <StatusBar barStyle={colors.statusBarStyle} />
-      <SafeAreaView style={homeStyles.safeArea}>
+      <SafeAreaView
+        style={homeStyles.safeArea}
+        edges={["top", "left", "right"]}
+      >
         <Header />
 
         <TodoInput />
