@@ -241,7 +241,7 @@ export default function Index() {
       <StatusBar barStyle={colors.statusBarStyle} />
       <SafeAreaView
         style={homeStyles.safeArea}
-        edges={["top", "left", "right"]}
+        edges={["top", "left", "right"]} // ← Only protect top, left, right
       >
         <Header />
 
